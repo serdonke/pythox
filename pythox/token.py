@@ -49,10 +49,10 @@ class TokenType(StrEnum):
 
 class Token:
     def __init__(self, tType: TokenType, lexeme: str, literal: object, line:int):
-        self.tType   = tType
-        self.lexeme  = lexeme
-        self.literal = literal
-        self.line    = line
+        self.tType: TokenType = tType
+        self.lexeme: str      = lexeme
+        self.literal: object  = literal
+        self.line: int        = line
         
     def __repr__(self) -> str:
         return f"{self.tType} {self.lexeme} {self.literal}"
