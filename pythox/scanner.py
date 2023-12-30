@@ -1,4 +1,5 @@
 import sys
+
 from .token import Token, TokenType
 
 class Scanner():
@@ -8,6 +9,23 @@ class Scanner():
         self.current: int = 0
         self.line: int    = 1
         self.source: str  = source.strip()
+        self.keywords: dict = {
+        'and' : TokenType("AND"),
+        'class' : TokenType("CLASS"),
+        'else' : TokenType("ELSE"),
+        'false' : TokenType("FALSE"),
+        'fun' : TokenType("FUN"),
+        'for' : TokenType("FOR"),
+        'if' : TokenType("IF"),
+        'nil' : TokenType("NIL"),
+        'or' : TokenType("OR"),
+        'print' : TokenType("PRINT"),
+        'return' : TokenType("RETURN"),
+        'super' : TokenType("SUPER"),
+        'this' : TokenType("THIS"),
+        'true' : TokenType("TRUE"),
+        'var' : TokenType("VAR"),
+        'while' : TokenType("WHILE")}
     
     def scanTokens(self) -> list:
         while(not self.isAtEnd()):
@@ -51,23 +69,90 @@ class Scanner():
                 if self.match('/'):
                     while self.peek() != '\n' and not self.isAtEnd():
                         self.advance()
+                # elif self.match('*'): # FIXME: Convoluted garbage..refactor
+                #     self.blockComment()
                 else:
                     self.addToken(TokenType("SLASH"))
             case ' ': pass
             case '\r': pass
             case '\t': pass
             case '\n': self.line += 1
-            case  _ : print(f"Unexpected token {c} on line: {self.line}:{self.current}\n",
-                            f"{self.source}\n", # FIXME: Not fool-proof, defer to a method
-                            "-" * (self.current - 1), "^\n",
-                            file=sys.stderr, sep='') # FIXME: Set hadError
+            case '"' : self.string()
+            case  _  : 
+                if self.isDigit(c):
+                    self.number()
+                elif self.isAlpha(c):
+                    self.identifier()
+                else:
+                    print(f"Unexpected token {c} on line: {self.line}",
+                          file=sys.stderr)
+                    
+                    print(self.printScanError(),
+                          file=sys.stderr) # FIXME: Set hadError
+                
+    def string(self) -> None:
+        while self.peek() != '"' and not self.isAtEnd():
+            if self.peek() == '\n':
+                self.line += 1
+            self.advance()
+        
+        if self.isAtEnd():
+            print("Unterminated String", file=sys.stderr)
+            return
+        
+        # Consume closing "
+        self.advance()
+
+        value: str = self.source[self.start + 1 : self.current - 1]
+        self.addToken(TokenType("STRING"), value)
+    
+    def number(self) -> None:
+        while self.isDigit(self.peek()):
+            self.advance()
+        
+        if self.peek() == '.' and self.isDigit(self.peekNext()):
+            self.advance()
+            while self.isDigit(self.peek()):
+                self.advance()
+        
+        self.addToken(TokenType("NUMBER"),
+                      float(self.source[self.start : self.current]))
+
+    def identifier(self):
+        while self.isAlphaNumeric(self.peek()):
+            self.advance()
+        
+        text: str = self.source[self.start : self.current]
+        try:
+            type: TokenType = self.keywords[text]
+            self.addToken(TokenType(type))
+        except KeyError:
+            self.addToken(TokenType("IDENTIFIER"))
+        
+    def blockComment(self) -> None:
+        while not self.isAtEnd() and (self.peek != '*'):
+            self.advance()
+            if self.peek() == '\n':
+                self.line += 1
+        
+        if self.isAtEnd():
+            
+            return None
+        
+        if not self.isAtEnd() and self.peek() == '*':
+            self.advance()
+            if not self.isAtEnd() and self.peek() == '/':
+                self.advance()
+            else:
+                print(f"Unterminated comment on line: {self.line}",
+                      self.printScanError(), sep='\n', file=sys.stderr)
+        else:
+            print(f"Unterminated comment on line: {self.line}",
+                  self.printScanError(), sep='\n', file=sys.stderr)
 
     def advance(self) -> str:
         self.current += 1
         return self.source[self.current - 1]
-    
-    # def addToken(self, type: TokenType):
-    #     self.addToken(type, None)
     
     def addToken(self, type: TokenType, literal: object=None):
         text: str = self.source[self.start : self.current]
@@ -79,9 +164,22 @@ class Scanner():
     def isAtEnd(self) -> bool:
         return self.current >= len(self.source)
 
+    def isDigit(self, char: str) -> bool:
+        return char >= '0' and char <= '9'
+    
+    def isAlpha(self, char: str) -> bool:
+        return (char >= 'a' and char <= 'z') or \
+               (char >= 'A' and char <= 'Z') or \
+                char == '_'
+
+    def isAlphaNumeric(self, char: str):
+        return self.isAlpha(char) or self.isDigit(char)
+    
     def match(self, expected: str) -> bool:
-        if self.isAtEnd(): return False
-        if self.source[self.current] != expected: return False
+        if self.isAtEnd():
+            return False
+        if self.source[self.current] != expected:
+            return False
 
         self.current += 1
         return True
@@ -91,6 +189,23 @@ class Scanner():
             return '\0'
         return self.source[self.current]
     
+    def peekNext(self) -> str:
+        if self.current + 1 >= len(self.source):
+            return '\0'
+        return self.source[self.current + 1]
+
+    def printScanError(self) -> str:
+        # NOTE(donke): This stinks...might bite in the arse later
+        src: list = self.source.split('\n')
+        srcLine: str = src[self.line - 1]
+        column: int = 0
+        if len(src) == 1 or self.line == 1:
+            column = self.current
+        else:
+            parsed: int = sum([len(x) for x in src[0: self.line - 1]])
+            column = self.current - parsed - 1 # Count the newline
+        return f"{srcLine}\n{'-' * (column - 1)}^"
+        
 if __name__ == "__main__":
     # Tests!
     ...

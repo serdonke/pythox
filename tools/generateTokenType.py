@@ -19,7 +19,10 @@ tokens = [
 
     ["EOF"]
 ]
+# Generate keyword hashmap (dicts in python)
+print("keywords={", *map(lambda x: f"         '{x.lower()}':TokenType('{x}'),", tokens[3]), "}",sep='\n')
 
+# Generate the TokenType class
 print("from enum import StrEnum\n")
 print("class TokenType(StrEnum):")
 for token in tokens:
