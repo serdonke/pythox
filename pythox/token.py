@@ -63,9 +63,9 @@ class Token:
 
 if __name__ == "__main__":
     # Tests!
-    token: TokenType = TokenType("SLASH")
+    token: TokenType = TokenType.SLASH
     print(token)
-    token1: Token = Token(TokenType("STAR"), '*', None, 1)
+    token1: Token = Token(TokenType.STAR, '*', None, 1)
     print(token1)
 
 # TokenType = Enum("TokenType", [

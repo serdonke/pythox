@@ -19,7 +19,8 @@ class Pythox():
         with open(filepath, 'r') as file:
             src = file.read()
             self.run(src)
-            if self.hadError: sys.exit(65)
+            if self.hadError: 
+                sys.exit(65)
 
     def runPrompt(self) -> None:
         while(True):
@@ -28,7 +29,8 @@ class Pythox():
                     line: str = input(">>> ")
                 except EOFError:
                     continue
-                if line == "": continue
+                if line == "":
+                    continue
                 self.run(line)
                 self.hadError = False
             except KeyboardInterrupt:

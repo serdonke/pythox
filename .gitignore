@@ -1,6 +1,7 @@
 # Pythox source files
 *.pox
 poxscripts/
+craftinginterpreters/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -70,8 +70,8 @@ class Scanner():
                 if self.match('/'):
                     while self.peek() != '\n' and not self.isAtEnd():
                         self.advance()
-                # elif self.match('*'): # FIXME: Convoluted garbage..refactor
-                #     self.blockComment()
+                elif self.match('*'): # FIXME: Convoluted garbage..refactor
+                    self.blockComment()
                 else:
                     self.addToken(TokenType.SLASH)
             case ' ' | '\r' | '\t': pass
@@ -131,12 +131,15 @@ class Scanner():
             self.addToken(TokenType.IDENTIFIER)
         
     def blockComment(self) -> None:
-        while not self.isAtEnd() and (self.peek != '*'):
+        while ((self.isAtEnd() == False) and (self.peek() != '*')):
             self.advance()
             if self.peek() == '\n':
                 self.line += 1
         
         if self.isAtEnd():
+            print(f"Unterminated comment on line: {self.line}:{self.column}",
+                  self.printScanError(), sep='\n' ,file=sys.stderr)
+
             return None
         
         if not self.isAtEnd() and self.peek() == '*':
@@ -196,12 +199,13 @@ class Scanner():
         return self.source[self.current + 1]
 
     def printScanError(self) -> str:
-        # NOTE(donke): This stinks...might bite in the arse later
         # NOTE(donke): Seems like adding a column var is much easier
-        # than wutteva da fock I was tryin'... wow
+        # than wutteva da fock I was tryin'
         src: list = self.source.split('\n')
         srcLine: str = src[self.line - 1]
         # column: int = 0
+
+        # NOTE(donke): This stinks...might bite in the arse later
         # if len(src) == 1 or self.line == 1:
         #     column = self.current
         # else:
