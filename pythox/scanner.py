@@ -4,35 +4,36 @@ from .token import Token, TokenType
 
 class Scanner():
     def __init__(self, source: str):
-        self.tokens: list = []
+        self.tokens: list[Token] = []
         self.start: int   = 0
         self.current: int = 0
         self.line: int    = 1
+        self.column: int  = 1
         self.source: str  = source.strip()
-        self.keywords: dict = {
-        'and' : TokenType("AND"),
-        'class' : TokenType("CLASS"),
-        'else' : TokenType("ELSE"),
-        'false' : TokenType("FALSE"),
-        'fun' : TokenType("FUN"),
-        'for' : TokenType("FOR"),
-        'if' : TokenType("IF"),
-        'nil' : TokenType("NIL"),
-        'or' : TokenType("OR"),
-        'print' : TokenType("PRINT"),
-        'return' : TokenType("RETURN"),
-        'super' : TokenType("SUPER"),
-        'this' : TokenType("THIS"),
-        'true' : TokenType("TRUE"),
-        'var' : TokenType("VAR"),
-        'while' : TokenType("WHILE")}
+        self._keywords: dict[str, TokenType] = {
+        'and'    : TokenType.AND,
+        'class'  : TokenType.CLASS,
+        'else'   : TokenType.ELSE,
+        'false'  : TokenType.FALSE,
+        'fun'    : TokenType.FUN,
+        'for'    : TokenType.FOR,
+        'if'     : TokenType.IF,
+        'nil'    : TokenType.NIL,
+        'or'     : TokenType.OR,
+        'print'  : TokenType.PRINT,
+        'return' : TokenType.RETURN,
+        'super'  : TokenType.SUPER,
+        'this'   : TokenType.THIS,
+        'true'   : TokenType.TRUE,
+        'var'    : TokenType.VAR,
+        'while'  : TokenType.WHILE}
     
     def scanTokens(self) -> list:
         while(not self.isAtEnd()):
             self.start = self.current
             self.scanToken()
         
-        self.tokens.append(Token(TokenType("EOF"),
+        self.tokens.append(Token(TokenType.EOF,
                                  "",
                                  None,
                                  self.line))
@@ -41,30 +42,30 @@ class Scanner():
     def scanToken(self) -> None:
         c: str = self.advance()
         match c:
-            case '(': self.addToken(TokenType("LEFT_PAREN"))
-            case ')': self.addToken(TokenType("RIGHT_PAREN"))
-            case '{': self.addToken(TokenType("LEFT_BRACE"))
-            case '}': self.addToken(TokenType("RIGHT_BRACE"))
-            case ',': self.addToken(TokenType("COMMA"))
-            case '.': self.addToken(TokenType("DOT"))
-            case '-': self.addToken(TokenType("MINUS"))
-            case '+': self.addToken(TokenType("PLUS"))
-            case ';': self.addToken(TokenType("SEMICOLON"))
-            case '*': self.addToken(TokenType("STAR"))
-            case '!': self.addToken(TokenType("BANG_EQUAL")
+            case '(': self.addToken(TokenType.LEFT_PAREN)
+            case ')': self.addToken(TokenType.RIGHT_PAREN)
+            case '{': self.addToken(TokenType.LEFT_BRACE)
+            case '}': self.addToken(TokenType.RIGHT_BRACE)
+            case ',': self.addToken(TokenType.COMMA)
+            case '.': self.addToken(TokenType.DOT)
+            case '-': self.addToken(TokenType.MINUS)
+            case '+': self.addToken(TokenType.PLUS)
+            case ';': self.addToken(TokenType.SEMICOLON)
+            case '*': self.addToken(TokenType.STAR)
+            case '!': self.addToken(TokenType.BANG_EQUAL
                                     if self.match('=')
-                                    else TokenType("BANG"))
-            case '=': self.addToken(TokenType("EQUAL_EQUAL")
+                                    else TokenType.BANG)
+            case '=': self.addToken(TokenType.EQUAL_EQUAL
                                     if self.match('=')
-                                    else TokenType("EQUAL"))
-            case '<': self.addToken(TokenType("LESS_EQUAL")
+                                    else TokenType.EQUAL)
+            case '<': self.addToken(TokenType.LESS_EQUAL
                                     if self.match('=')
-                                    else TokenType("LESS"))
-            case '>': self.addToken(TokenType("GREATER_EQUAL")
+                                    else TokenType.LESS)
+            case '>': self.addToken(TokenType.GREATER_EQUAL
                                     if self.match('=')
-                                    else TokenType("GREATER"))
-            case '?': self.addToken(TokenType("QUESTION"))
-            case ':': self.addToken(TokenType("COLON"))
+                                    else TokenType.GREATER)
+            case '?': self.addToken(TokenType.QUESTION)
+            case ':': self.addToken(TokenType.COLON)
             case '/': 
                 if self.match('/'):
                     while self.peek() != '\n' and not self.isAtEnd():
@@ -72,11 +73,11 @@ class Scanner():
                 # elif self.match('*'): # FIXME: Convoluted garbage..refactor
                 #     self.blockComment()
                 else:
-                    self.addToken(TokenType("SLASH"))
-            case ' ': pass
-            case '\r': pass
-            case '\t': pass
-            case '\n': self.line += 1
+                    self.addToken(TokenType.SLASH)
+            case ' ' | '\r' | '\t': pass
+            case '\n': 
+                self.line += 1
+                self.column = 1
             case '"' : self.string()
             case  _  : 
                 if self.isDigit(c):
@@ -104,7 +105,7 @@ class Scanner():
         self.advance()
 
         value: str = self.source[self.start + 1 : self.current - 1]
-        self.addToken(TokenType("STRING"), value)
+        self.addToken(TokenType.STRING, value)
     
     def number(self) -> None:
         while self.isDigit(self.peek()):
@@ -115,7 +116,7 @@ class Scanner():
             while self.isDigit(self.peek()):
                 self.advance()
         
-        self.addToken(TokenType("NUMBER"),
+        self.addToken(TokenType.NUMBER,
                       float(self.source[self.start : self.current]))
 
     def identifier(self):
@@ -124,10 +125,10 @@ class Scanner():
         
         text: str = self.source[self.start : self.current]
         try:
-            type: TokenType = self.keywords[text]
+            type: TokenType = self._keywords[text]
             self.addToken(TokenType(type))
         except KeyError:
-            self.addToken(TokenType("IDENTIFIER"))
+            self.addToken(TokenType.IDENTIFIER)
         
     def blockComment(self) -> None:
         while not self.isAtEnd() and (self.peek != '*'):
@@ -136,7 +137,6 @@ class Scanner():
                 self.line += 1
         
         if self.isAtEnd():
-            
             return None
         
         if not self.isAtEnd() and self.peek() == '*':
@@ -152,6 +152,7 @@ class Scanner():
 
     def advance(self) -> str:
         self.current += 1
+        self.column  += 1
         return self.source[self.current - 1]
     
     def addToken(self, type: TokenType, literal: object=None):
@@ -196,15 +197,17 @@ class Scanner():
 
     def printScanError(self) -> str:
         # NOTE(donke): This stinks...might bite in the arse later
+        # NOTE(donke): Seems like adding a column var is much easier
+        # than wutteva da fock I was tryin'... wow
         src: list = self.source.split('\n')
         srcLine: str = src[self.line - 1]
-        column: int = 0
-        if len(src) == 1 or self.line == 1:
-            column = self.current
-        else:
-            parsed: int = sum([len(x) for x in src[0: self.line - 1]])
-            column = self.current - parsed - 1 # Count the newline
-        return f"{srcLine}\n{'-' * (column - 1)}^"
+        # column: int = 0
+        # if len(src) == 1 or self.line == 1:
+        #     column = self.current
+        # else:
+        #     parsed: int = sum([len(x) for x in src[0: self.line - 1]])
+        #     column = self.current - parsed - 1 # Count the newline
+        return f"{srcLine}\n{'-' * (self.column - 2)}^"
         
 if __name__ == "__main__":
     # Tests!

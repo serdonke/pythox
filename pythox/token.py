@@ -1,4 +1,5 @@
 from enum import StrEnum
+from dataclasses import dataclass
 
 class TokenType(StrEnum):
     LEFT_PAREN='LEFT_PAREN' 
@@ -47,12 +48,12 @@ class TokenType(StrEnum):
 
     EOF='EOF'
 
+@dataclass(frozen=True, slots=True)
 class Token:
-    def __init__(self, tType: TokenType, lexeme: str, literal: object, line:int):
-        self.tType: TokenType = tType
-        self.lexeme: str      = lexeme
-        self.literal: object  = literal
-        self.line: int        = line
+    tType: TokenType
+    lexeme: str 
+    literal: float | str | bool | None
+    line: int
         
     def __repr__(self) -> str:
         return f"{self.tType} {self.lexeme} {self.literal}"
