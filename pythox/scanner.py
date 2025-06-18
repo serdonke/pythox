@@ -1,6 +1,6 @@
 import sys
 
-from .token import Token, TokenType
+from .ttoken import Token, TokenType
 
 class Scanner():
     def __init__(self, source: str):

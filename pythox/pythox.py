@@ -1,5 +1,16 @@
+import os
 import sys
 from .scanner import Scanner
+
+fancyPrompt: bool = True
+try:
+    # This is real Prompt engineering
+    from prompt_toolkit import PromptSession
+    from prompt_toolkit.history import FileHistory
+    from rich.console import Console
+    import os
+except ModuleNotFoundError:
+    fancyPrompt = False
 
 class Pythox():
     def __init__(self) -> None:
@@ -11,6 +22,8 @@ class Pythox():
             sys.exit(64)
         elif len(sys.argv) == 2:
             self.runFile(sys.argv[1])
+        elif fancyPrompt:
+            self.runFancyPrompt()
         else:
             self.runPrompt()
 
@@ -36,10 +49,31 @@ class Pythox():
             except KeyboardInterrupt:
                 break
 
+    def runFancyPrompt(self) -> None:
+        console = Console()
+        history_path = os.path.expanduser("./.pythox_history")
+        session = PromptSession(">>> ", history=FileHistory(history_path))
+
+        while True:
+            try:
+                line: str = session.prompt()
+                if line.strip() == "":
+                    continue
+                self.run(line)
+                self.hadError = False
+            except KeyboardInterrupt:
+                console.print("[bold red]Why you do that?[/bold red]")
+                continue
+            except EOFError:
+                console.print("[bold cyan]Goodbye.[/bold cyan]")
+                break
+            except Exception as e:
+                console.print(f"[bold red]Unhandled Error:[/bold red] {e}")
+
     def run(self, source: str) -> None:
         lexer  = Scanner(source)
         tokens = lexer.scanTokens()
-        print(*tokens, sep='\n---xxx---\n\n')
+        #print(*tokens, sep='\n---xxx---\n\n')
 
     def error(self, line: int, message: str):
         self.report(line, "", message)

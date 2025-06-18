@@ -2,6 +2,7 @@
 *.pox
 poxscripts/
 craftinginterpreters/
+.pythox_history
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
