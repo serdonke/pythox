@@ -99,6 +99,25 @@ class Parser:
         print("BIG FUCCY WUCCY HAPPEN in pythox.Parser.consume()")
         raise ParseError(f"[line {self.peek().line}] Error at '{self.peek().lexeme}': {message}")
         
+    def synchronize(self):
+        self.advance()
+
+        while not self.is_at_end():
+            if self.previous().tType == TokenType.SEMICOLON:
+                return
+
+            match self.peek().tType:
+		        case TokenType.CLASS: return
+		        case TokenType.FUN: return
+		        case TokenType.VAR: return
+		        case TokenType.FOR: return
+		        case TokenType.IF: return
+		        case TokenType.WHILE: return
+		        case TokenType.PRINT: return
+		        case TokenType.RETURN: return
+		          
+            self.advance()
+
     def check(self, ttype: TokenType) -> bool:
         if self.is_at_end():
             return False
