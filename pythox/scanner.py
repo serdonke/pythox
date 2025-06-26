@@ -213,6 +213,16 @@ class Scanner():
         #     column = self.current - parsed - 1 # Count the newline
         return f"{srcLine}\n{'-' * (self.column - 2)}^"
         
-if __name__ == "__main__":
-    # Tests!
-    ...
+if __name__ in ("__main__"):
+    # Test
+
+    file = sys.argv[1]
+    with open(file, "r") as f:
+        source = f.read()
+
+    scanner = Scanner(source)
+    tokens = scanner.scanTokens()
+
+    for t in tokens:
+        literal = "null" if t.literal is None else str(t.literal)
+        print(f"{t.tType.name} {t.lexeme} {literal}")

@@ -5,3 +5,12 @@ Run:
 ```
 python main.py
 ```
+
+- Can have nicer UX if have uv installed with a better REPL
+```
+uv run main.py
+```
+Run Tests:
+```
+uv run pytest -vv
+```
