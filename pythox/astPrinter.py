@@ -1,6 +1,6 @@
-from expr import *
+from .expr import *
 
-from ttoken import TokenType
+from .ttoken import TokenType
 
 def print_ast(expr: Expr) -> str:
     match expr:

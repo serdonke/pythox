@@ -1,6 +1,9 @@
 import os
 import sys
+
 from .scanner import Scanner
+from .parser import Parser
+from .astPrinter import print_ast, parenthesize
 
 fancyPrompt: bool = True
 try:
@@ -73,6 +76,11 @@ class Pythox():
     def run(self, source: str) -> None:
         lexer  = Scanner(source)
         tokens = lexer.scanTokens()
+
+        parser = Parser(tokens)
+        expression = parser.parse()
+
+        print(print_ast(expression))
         #print(*tokens, sep='\n---xxx---\n\n')
 
     def error(self, line: int, message: str):

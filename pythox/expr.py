@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from ttoken import Token
+from .ttoken import Token
 
 class Expr:
     pass
