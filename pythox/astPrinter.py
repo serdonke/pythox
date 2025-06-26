@@ -21,7 +21,7 @@ def print_ast(expr: Expr) -> str:
         case Assign(name, value):
             return f"(assign {name.lexeme} {print_ast(value)})"
         case _:
-            return "???"
+            return "printAST: [Unknown Expr]"
 
 def parenthesize(name: str, *exprs: Expr) -> str:
     parts = [print_ast(expr) for expr in exprs]
