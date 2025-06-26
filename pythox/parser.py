@@ -9,7 +9,8 @@ class Parser:
     def parse(self) -> Expr:
         try:
             return self.expression()
-        except ParseError:
+        except ParseError as e:
+            print(e)
             return None
 
     def expression(self) -> Expr:
@@ -82,6 +83,7 @@ class Parser:
             self.consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
             return Grouping(expr)
 
+        print("BIG FUCCY WUCCY HAPPEN in pythox.parser.primary()")
         raise ParseError(f"[line {self.peek().line}] Expect expression.")
 
     def match(self, *types: TokenType) -> bool:
@@ -94,6 +96,7 @@ class Parser:
     def consume(self, type: TokenType, message: str) -> Token:
         if self.check(type):
             return self.advance()
+        print("BIG FUCCY WUCCY HAPPEN in pythox.Parser.consume()")
         raise ParseError(f"[line {self.peek().line}] Error at '{self.peek().lexeme}': {message}")
         
     def check(self, ttype: TokenType) -> bool:
