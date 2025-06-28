@@ -107,14 +107,14 @@ class Parser:
                 return
 
             match self.peek().tType:
-		        case TokenType.CLASS: return
-		        case TokenType.FUN: return
-		        case TokenType.VAR: return
-		        case TokenType.FOR: return
-		        case TokenType.IF: return
-		        case TokenType.WHILE: return
-		        case TokenType.PRINT: return
-		        case TokenType.RETURN: return
+                case TokenType.CLASS: return
+                case TokenType.FUN: return
+                case TokenType.VAR: return
+                case TokenType.FOR: return
+                case TokenType.IF: return
+                case TokenType.WHILE: return
+                case TokenType.PRINT: return
+                case TokenType.RETURN: return
 		          
             self.advance()
 
