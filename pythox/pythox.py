@@ -4,6 +4,7 @@ import sys
 from .scanner import Scanner
 from .parser import Parser
 from .astPrinter import print_ast, parenthesize
+from .interpreter import Interpreter
 
 fancyPrompt: bool = True
 try:
@@ -80,7 +81,9 @@ class Pythox():
         parser = Parser(tokens)
         expression = parser.parse()
 
-        print(print_ast(expression))
+        interpreter = Interpreter()
+        interpreter.interpret(expression)
+        #print(print_ast(expression))
         #print(*tokens, sep='\n---xxx---\n\n')
 
     def error(self, line: int, message: str):
