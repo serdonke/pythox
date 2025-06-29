@@ -79,10 +79,13 @@ class Pythox():
         tokens = lexer.scanTokens()
 
         parser = Parser(tokens)
-        expression = parser.parse()
-
+        statements = parser.parse()
+        if statements is None:
+            return
+        
         interpreter = Interpreter()
-        interpreter.interpret(expression)
+        interpreter.interpret(statements)
+            
         #print(print_ast(expression))
         #print(*tokens, sep='\n---xxx---\n\n')
 

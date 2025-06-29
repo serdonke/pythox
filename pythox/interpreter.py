@@ -1,16 +1,27 @@
 from .expr import *
+from .stmt import *
 from .ttoken import TokenType
 
 class Interpreter:
     def __init__(self):
         pass
 
-    def interpret(self, expr: Expr):
+    def interpret(self, statements: list[Stmt]):
         try:
-            value = self.evaluate(expr)
-            print(self.stringify(value))
+            for stmt in statements:
+                self.execute(stmt)
         except RuntimeError_ as e:
             print(e)
+
+    def execute(self, stmt: Stmt):
+        match stmt:
+            case Expression():
+                self.evaluate(stmt.expression)
+                return None
+            case Print():
+                value = self.evaluate(stmt.expression)
+                print(self.stringify(value))
+                return None
 
     def evaluate(self, expr: Expr):
         match expr:

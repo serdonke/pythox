@@ -19,11 +19,14 @@ def main():
                   "Variable" : "Token name"}
     defineAst(outputDir, "expr", expr)
 
+    stmt: dict = {"Expression": "Expr expression", "Print": "Expr expression"}
+    defineAst(outputDir, "stmt", stmt)
+
 def defineAst(outputDir: Path, baseName: str, types: dict[str, str]):
     path = outputDir / f"{baseName}.py"
     with open(path, "w") as f:
         f.write("from dataclasses import dataclass\n\n")
-        f.write("from .token import Token\n\n")
+        f.write("from .ttoken import Token\n\n")
 
         f.write(f"class {baseName.capitalize()}:\n")
         f.write("    pass\n\n")

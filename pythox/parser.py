@@ -1,17 +1,36 @@
 from .ttoken import Token, TokenType
 from .expr import *
+from .stmt import *
 
 class Parser:
     def __init__(self, tokens: list[Token]):
         self.tokens = tokens
         self.current = 0
 
-    def parse(self) -> Expr:
-        try:
-            return self.expression()
-        except ParseError as e:
-            print(e)
-            return None
+    def parse(self) -> list[Stmt] | None:
+	    try:
+	        statements: list[Stmt] = []
+	        while not self.is_at_end():
+	            statements.append(self.statement())
+	        return statements
+	    except Exception as e:
+	        print(f"{e}")
+	        return None
+
+    def statement(self) -> Stmt:
+        if self.match(TokenType.PRINT):
+            return self.printStatement()
+        return self.expressionStatement()
+
+    def printStatement(self) -> Stmt:
+        value: Expr = self.expression()
+        self.consume(TokenType.SEMICOLON, "Expect ';' after value.")
+        return Print(value)
+
+    def expressionStatement(self) -> Stmt:
+        expr = self.expression()
+        self.consume(TokenType.SEMICOLON, "Expect ';' after expression.")
+        return Expression(expr)
 
     def expression(self) -> Expr:
         return self.equality()
@@ -83,7 +102,6 @@ class Parser:
             self.consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
             return Grouping(expr)
 
-        print("BIG FUCCY WUCCY HAPPEN in pythox.parser.primary()")
         raise ParseError(f"[line {self.peek().line}] Expect expression.")
 
     def match(self, *types: TokenType) -> bool:
@@ -96,7 +114,6 @@ class Parser:
     def consume(self, type: TokenType, message: str) -> Token:
         if self.check(type):
             return self.advance()
-        print("BIG FUCCY WUCCY HAPPEN in pythox.Parser.consume()")
         raise ParseError(f"[line {self.peek().line}] Error at '{self.peek().lexeme}': {message}")
         
     def synchronize(self):
@@ -138,7 +155,10 @@ class Parser:
         return self.tokens[self.current - 1]
 
 class ParseError(Exception):
-    pass
+    def __init__(self, message):
+        super().__init__(message)
+    def __str__(self):
+        return f"{self.args[0]}"
 
 if __name__ in ("__main__"):
     import sys
@@ -157,7 +177,9 @@ if __name__ in ("__main__"):
     tokens = scanner.scanTokens()
 
     parser = Parser(tokens)
-    expr = parser.parse()
-
-    if expr is not None:
-        print(print_ast(expr))
+    try:
+        exprs = parser.parse()
+        if exprs is not None:
+            print(print_ast(exprs))
+    except Exception as e:
+        print(f"[Parser Error] {type(e).__name__}: {e}")
