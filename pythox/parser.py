@@ -2,20 +2,21 @@ from .ttoken import Token, TokenType
 from .expr import *
 from .stmt import *
 
+
 class Parser:
     def __init__(self, tokens: list[Token]):
         self.tokens = tokens
         self.current = 0
 
     def parse(self) -> list[Stmt] | None:
-	    try:
-	        statements: list[Stmt] = []
-	        while not self.is_at_end():
-	            statements.append(self.statement())
-	        return statements
-	    except Exception as e:
-	        print(f"{e}")
-	        return None
+        try:
+            statements: list[Stmt] = []
+            while not self.is_at_end():
+                statements.append(self.statement())
+            return statements
+        except Exception as e:
+            print(f"{e}")
+            return None
 
     def statement(self) -> Stmt:
         if self.match(TokenType.PRINT):
@@ -48,10 +49,12 @@ class Parser:
     def comparison(self) -> Expr:
         expr = self.term()
 
-        while self.match(TokenType.GREATER, 
-                         TokenType.GREATER_EQUAL, 
-                         TokenType.LESS, 
-                         TokenType.LESS_EQUAL):
+        while self.match(
+            TokenType.GREATER,
+            TokenType.GREATER_EQUAL,
+            TokenType.LESS,
+            TokenType.LESS_EQUAL,
+        ):
             operator = self.previous()
             right = self.term()
             expr = Binary(expr, operator, right)
@@ -114,8 +117,10 @@ class Parser:
     def consume(self, type: TokenType, message: str) -> Token:
         if self.check(type):
             return self.advance()
-        raise ParseError(f"[line {self.peek().line}] Error at '{self.peek().lexeme}': {message}")
-        
+        raise ParseError(
+            f"[line {self.peek().line}] Error at '{self.peek().lexeme}': {message}"
+        )
+
     def synchronize(self):
         self.advance()
 
@@ -124,15 +129,23 @@ class Parser:
                 return
 
             match self.peek().tType:
-                case TokenType.CLASS: return
-                case TokenType.FUN: return
-                case TokenType.VAR: return
-                case TokenType.FOR: return
-                case TokenType.IF: return
-                case TokenType.WHILE: return
-                case TokenType.PRINT: return
-                case TokenType.RETURN: return
-		          
+                case TokenType.CLASS:
+                    return
+                case TokenType.FUN:
+                    return
+                case TokenType.VAR:
+                    return
+                case TokenType.FOR:
+                    return
+                case TokenType.IF:
+                    return
+                case TokenType.WHILE:
+                    return
+                case TokenType.PRINT:
+                    return
+                case TokenType.RETURN:
+                    return
+
             self.advance()
 
     def check(self, ttype: TokenType) -> bool:
@@ -154,11 +167,14 @@ class Parser:
     def previous(self) -> Token:
         return self.tokens[self.current - 1]
 
+
 class ParseError(Exception):
     def __init__(self, message):
         super().__init__(message)
+
     def __str__(self):
         return f"{self.args[0]}"
+
 
 if __name__ in ("__main__"):
     import sys

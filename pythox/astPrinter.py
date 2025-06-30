@@ -2,6 +2,7 @@ from .expr import *
 
 from .ttoken import TokenType
 
+
 def print_ast(expr: Expr) -> str:
     match expr:
         case Binary(left, operator, right):
@@ -23,9 +24,11 @@ def print_ast(expr: Expr) -> str:
         case _:
             return "printAST: [Unknown Expr]"
 
+
 def parenthesize(name: str, *exprs: Expr) -> str:
     parts = [print_ast(expr) for expr in exprs]
     return f"({name} {' '.join(parts)})"
+
 
 if __name__ == "__main__":
     expr = Binary(
@@ -36,7 +39,7 @@ if __name__ == "__main__":
         operator=Token(TokenType.STAR, "*", None, 1),
         right=Grouping(
             expression=Literal(45.67),
-        )
+        ),
     )
 
     print(print_ast(expr))

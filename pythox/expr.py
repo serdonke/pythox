@@ -2,13 +2,16 @@ from dataclasses import dataclass
 
 from .ttoken import Token
 
+
 class Expr:
     pass
+
 
 @dataclass(frozen=True, slots=True)
 class Assign(Expr):
     name: Token
     value: Expr
+
 
 @dataclass(frozen=True, slots=True)
 class Binary(Expr):
@@ -16,14 +19,17 @@ class Binary(Expr):
     operator: Token
     right: Expr
 
+
 @dataclass(frozen=True, slots=True)
 class Grouping(Expr):
     expression: Expr
+
 
 @dataclass(frozen=True, slots=True)
 class Literal(Expr):
     # Hmmm should we use object?
     value: float | str | bool | None
+
 
 @dataclass(frozen=True, slots=True)
 class Logical(Expr):
@@ -31,10 +37,12 @@ class Logical(Expr):
     operator: Token
     right: Expr
 
+
 @dataclass(frozen=True, slots=True)
 class Unary(Expr):
     operator: Token
     right: Expr
+
 
 @dataclass(frozen=True, slots=True)
 class Ternary(Expr):
@@ -44,7 +52,7 @@ class Ternary(Expr):
     colon: Token
     right: Expr
 
+
 @dataclass(frozen=True, slots=True)
 class Variable(Expr):
     name: Token
-

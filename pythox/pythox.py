@@ -3,7 +3,6 @@ import sys
 
 from .scanner import Scanner
 from .parser import Parser
-from .astPrinter import print_ast, parenthesize
 from .interpreter import Interpreter
 
 fancyPrompt: bool = True
@@ -16,10 +15,11 @@ try:
 except ModuleNotFoundError:
     fancyPrompt = False
 
-class Pythox():
+
+class Pythox:
     def __init__(self) -> None:
         self.hadError: bool = False
-    
+
     def main(self) -> None:
         if len(sys.argv) > 2:
             print("Usage: pythox [script]")
@@ -33,14 +33,14 @@ class Pythox():
 
     def runFile(self, filepath: str) -> None:
         # TODO: Add error handling
-        with open(filepath, 'r') as file:
+        with open(filepath, "r") as file:
             src = file.read()
             self.run(src)
-            if self.hadError: 
+            if self.hadError:
                 sys.exit(65)
 
     def runPrompt(self) -> None:
-        while(True):
+        while True:
             try:
                 try:
                     line: str = input(">>> ")
@@ -75,27 +75,27 @@ class Pythox():
                 console.print(f"[bold red]Unhandled Error:[/bold red] {e}")
 
     def run(self, source: str) -> None:
-        lexer  = Scanner(source)
+        lexer = Scanner(source)
         tokens = lexer.scanTokens()
 
         parser = Parser(tokens)
         statements = parser.parse()
         if statements is None:
             return
-        
+
         interpreter = Interpreter()
         interpreter.interpret(statements)
-            
-        #print(print_ast(expression))
-        #print(*tokens, sep='\n---xxx---\n\n')
+
+        # print(print_ast(expression))
+        # print(*tokens, sep='\n---xxx---\n\n')
 
     def error(self, line: int, message: str):
         self.report(line, "", message)
-    
+
     def report(self, line: int, where: str, message: str):
-        print(f"[line {line}] Error {where} : {message}", 
-              file=sys.stderr)
+        print(f"[line {line}] Error {where} : {message}", file=sys.stderr)
         self.hadError = True
+
 
 if __name__ == "__main__":
     # Tests

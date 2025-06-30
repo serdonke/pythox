@@ -2,6 +2,7 @@ from .expr import *
 from .stmt import *
 from .ttoken import TokenType
 
+
 class Interpreter:
     def __init__(self):
         pass
@@ -74,8 +75,9 @@ class Interpreter:
 
                         # WARN: Do we even reach here?
                         # Python is much more forgiving than java
-                        raise RuntimeError_(expr.operator, 
-                                            "Operands must be two numbers or two strings")
+                        raise RuntimeError_(
+                            expr.operator, "Operands must be two numbers or two strings"
+                        )
                     case TokenType.SLASH:
                         self.check_number_operands(expr.operator, left, right)
                         # Python ftw?
@@ -89,7 +91,7 @@ class Interpreter:
                         return float(left) * float(right)
                 # Should never come here
                 raise AssertionError("Unreachable: unexpected binary operator")
-    
+
     def isTruthy(self, objecta) -> bool:
         if objecta is None:
             return False
@@ -109,7 +111,7 @@ class Interpreter:
             return "nil"
         if isinstance(objecta, float):
             text = str(objecta)
-            if text.endswith('.0'):
+            if text.endswith(".0"):
                 text = text[0:-2]
             return text
         if isinstance(objecta, bool):
@@ -126,6 +128,7 @@ class Interpreter:
             return
         raise RuntimeError_(operator, "Operands must be numbers.")
 
+
 class RuntimeError_(Exception):
     def __init__(self, token, message):
         super().__init__(message)
@@ -133,6 +136,7 @@ class RuntimeError_(Exception):
 
     def __str__(self):
         return f"[line {self.token.line}] RuntimeError: {self.args[0]}"
+
 
 if __name__ in ("__main__"):
     import sys
