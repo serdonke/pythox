@@ -3,7 +3,7 @@ import re
 from pathlib import Path
 import pytest
 
-LOX_ROOT = Path(__file__).parent / "loxscripts" / "scanning"
+LOX_ROOT = Path(__file__).parent / "loxscripts" / "precedence"
 EXPECT_OUTPUT = re.compile(r"// expect: ?(.*)")
 
 
@@ -14,7 +14,7 @@ def parse_expected_output(file: Path):
 
 def run_scanner(file: Path) -> list[str]:
     result = subprocess.run(
-        ["python", "-m", "pythox.scanner", str(file)], capture_output=True, text=True
+        ["python", "main.py", str(file)], capture_output=True, text=True
     )
     return result.stdout.strip().splitlines()
 
