@@ -1,0 +1,27 @@
+name: Pythox CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. Check out code
+        uses: actions/checkout@v4
+
+      - name: 2. Set up UV
+        uses: astral-sh/setup-uv@v6
+
+      - name: 3. Install dependencies
+        run: |
+          uv venv
+          uv pip install -e . 
+          
+      - name: 4. Run tests
+        run: |
+          # 'uv run' will find the .venv created by 'uv pip'
+          uv run pytest -vv
