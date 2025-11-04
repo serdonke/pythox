@@ -25,3 +25,19 @@ jobs:
         run: |
           # 'uv run' will find the .venv created by 'uv pip'
           uv run pytest -vv
+
+      - name: 5. Generate stats
+        if: always()
+        run: |
+          # This script runs a *second*, lightweight pytest
+          # to get the "passed" count.
+          uv run python scripts/update_progress.py
+
+      - name: 6. Commit progress JSON
+        # This step *always* runs, but *only* on the main branch.
+        if: always() && github.ref == 'refs/heads/main'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "ci: Auto-update test progress"
+          file_pattern: build/progress.json
+          add_options: "-f"
