@@ -14,3 +14,4 @@ Run Tests:
 ```
 uv run pytest -vv
 ```
+All tests were copied from [craftinginterpreter's test suite](https://github.com/munificent/craftinginterpreters/tree/master/test)
