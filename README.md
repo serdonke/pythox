@@ -1,4 +1,4 @@
-![Pythox Tests](https://github.com/serdonke/pythox/actions/workflows/ci.yml/badge.svg) ![Test Progress](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/serdonke/pythox/main/build/progress.json)
+![Pythox Tests](https://github.com/serdonke/pythox/actions/workflows/ci.yml/badge.svg) ![Test Progress](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/serdonke/pythox/main/.tests/progress.json)
 
 # Pythox
 - An implementation of the [Lox](https://craftinginterpreters.com/the-lox-language.html) language using Python.

@@ -81,7 +81,7 @@ def main():
     }
 
     # Write the *badge* JSON file
-    output_path = Path(__file__).parent.parent / "build" / "progress.json"
+    output_path = Path(__file__).parent.parent / ".tests" / "progress.json"
     output_path.parent.mkdir(exist_ok=True)
     with open(output_path, 'w') as f:
         json.dump(stats_json, f, indent=2)
