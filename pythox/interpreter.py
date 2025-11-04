@@ -1,11 +1,13 @@
+import sys
+
 from .expr import *
 from .stmt import *
 from .ttoken import TokenType
 
 
 class Interpreter:
-    def __init__(self):
-        pass
+    def __init__(self, output_writer=sys.stdout.write):
+        self.output_writer = output_writer
 
     def interpret(self, statements: list[Stmt]):
         try:
@@ -21,7 +23,7 @@ class Interpreter:
                 return None
             case Print():
                 value = self.evaluate(stmt.expression)
-                print(self.stringify(value))
+                self.output_writer(self.stringify(value) + "\n")
                 return None
 
     def evaluate(self, expr: Expr):
