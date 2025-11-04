@@ -1,3 +1,5 @@
+![Pythox Tests](https://github.com/serdonke/pythox/actions/workflows/ci.yml/badge.svg)
+
 # Pythox
 - An implementation of the [Lox](https://craftinginterpreters.com/the-lox-language.html) language using Python.
 

@@ -1,4 +1,4 @@
-name: Pythox CI
+name: Pythox Tests
 
 on:
   push:
